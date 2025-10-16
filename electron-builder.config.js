@@ -14,6 +14,11 @@ const baseConfig = {
     extraMetadata: {
         version: process.env.VITE_APP_VERSION,
     },
+    // Disable symbolic links on Windows to avoid privilege issues
+    ...(process.platform === "win32" && {
+        buildDependenciesFromSource: false,
+        nodeGypRebuild: false,
+    }),
 };
 
 /**
@@ -60,4 +65,6 @@ const platformSpecificConfig = {
     },
 };
 
-module.exports = platformSpecificConfig[process.platform];
+// Export platform-specific config, with fallback to current platform
+const targetPlatform = process.env.BUILD_PLATFORM || process.platform;
+module.exports = platformSpecificConfig[targetPlatform] || platformSpecificConfig[process.platform];
